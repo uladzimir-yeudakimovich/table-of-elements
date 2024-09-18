@@ -22,9 +22,12 @@
       </ng-container>
 
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns; let i=index" (click)="openDialog(row, i)"></tr>
     </table>
   </div>
 } @else {
-  <p>Loading...</p>
+  <div class="spinner-container">
+    <mat-spinner class="spinner" />
+    <div class="label">Loading...</div>
+  </div>
 }
