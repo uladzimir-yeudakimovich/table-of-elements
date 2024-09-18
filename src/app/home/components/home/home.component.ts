@@ -8,11 +8,22 @@ import { HttpClientModule } from '@angular/common/http';
 import { ModalWindowComponent } from '../../../shared/components/modal-window/modal-window.component';
 import { MatDialog } from '@angular/material/dialog';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { FilterElementsPipe } from '../../../shared/pipes/filter-elements.pipe';
+import { FormsModule } from '@angular/forms';
+import { MatInputModule } from '@angular/material/input';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [HttpClientModule, NgIf, MatTableModule, MatProgressSpinner],
+  imports: [
+    HttpClientModule,
+    FilterElementsPipe,
+    FormsModule,
+    NgIf,
+    MatTableModule,
+    MatProgressSpinner,
+    MatInputModule,
+  ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
   providers: [PeriodicElementService],
@@ -20,6 +31,7 @@ import { MatProgressSpinner } from '@angular/material/progress-spinner';
 export class HomeComponent implements OnInit {
   displayedColumns: string[] = ['position', 'name', 'weight', 'symbol'];
   dataSource: PeriodicElement[] | null = null;
+  filterKeyword = '';
 
   constructor(
     private periodicElementService: PeriodicElementService,
@@ -33,7 +45,8 @@ export class HomeComponent implements OnInit {
     ).subscribe(res => this.dataSource = res);
   }
 
-  openDialog(row: PeriodicElement, index: number): void {
+  openDialog(row: PeriodicElement): void {
+    const index = row.position;
     const dialogRef = this.dialog.open(ModalWindowComponent, {
       data: row,
     });
@@ -41,8 +54,8 @@ export class HomeComponent implements OnInit {
       takeUntilDestroyed(this.destroyRef),
     ).subscribe((result: PeriodicElement) => {
       if (result) {
-        this.dataSource = this.dataSource!.map((item, i) =>
-          i === index ? result : item
+        this.dataSource = this.dataSource!.map((item) =>
+          item.position === index ? result : item
         );
       }
     });
