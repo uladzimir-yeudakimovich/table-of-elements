@@ -9,8 +9,9 @@ import { ModalWindowComponent } from '../../../shared/components/modal-window/mo
 import { MatDialog } from '@angular/material/dialog';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { FilterElementsPipe } from '../../../shared/pipes/filter-elements.pipe';
-import { FormsModule } from '@angular/forms';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
+import { debounceTime } from 'rxjs';
 
 @Component({
   selector: 'app-home',
@@ -18,7 +19,7 @@ import { MatInputModule } from '@angular/material/input';
   imports: [
     HttpClientModule,
     FilterElementsPipe,
-    FormsModule,
+    ReactiveFormsModule,
     NgIf,
     MatTableModule,
     MatProgressSpinner,
@@ -31,7 +32,8 @@ import { MatInputModule } from '@angular/material/input';
 export class HomeComponent implements OnInit {
   displayedColumns: string[] = ['position', 'name', 'weight', 'symbol'];
   dataSource: PeriodicElement[] | null = null;
-  filterKeyword = '';
+  filterKeyword: string | null = '';
+  filterControl = new FormControl('');
 
   constructor(
     private periodicElementService: PeriodicElementService,
@@ -43,6 +45,11 @@ export class HomeComponent implements OnInit {
     this.periodicElementService.getElements().pipe(
       takeUntilDestroyed(this.destroyRef),
     ).subscribe(res => this.dataSource = res);
+
+    this.filterControl.valueChanges.pipe(
+      takeUntilDestroyed(this.destroyRef),
+      debounceTime(2000),
+    ).subscribe(keyword => this.filterKeyword = keyword);
   }
 
   openDialog(row: PeriodicElement): void {

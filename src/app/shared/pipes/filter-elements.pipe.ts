@@ -6,8 +6,16 @@ import { PeriodicElement } from '../../home/models/periodic-element.model';
   standalone: true,
 })
 export class FilterElementsPipe implements PipeTransform {
-  transform(items: PeriodicElement[], keyword: string): PeriodicElement[] {
-    if (!items || !keyword) {
+  transform(items: PeriodicElement[], keyword: string | null): PeriodicElement[] {
+    // if (!items || !keyword) {
+    //   return items;
+    // }
+
+    if (!items) {
+      return [];
+    }
+
+    if (!keyword) {
       return items;
     }
 
